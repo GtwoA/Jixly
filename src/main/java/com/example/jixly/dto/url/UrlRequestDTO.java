@@ -17,4 +17,9 @@ public class UrlRequestDTO {
 
     @NotBlank(message = "Название не может быть пустым")
     private String slug;
+
+    @NotBlank(message = "Домен не может быть пустым")
+    private String domain;
+
+    private Long userId;
 }

@@ -4,15 +4,21 @@ import com.example.jixly.constant.ClassConstants;
 import com.example.jixly.dto.url.UrlRequestDTO;
 import com.example.jixly.dto.url.UrlResponseDTO;
 import com.example.jixly.entity.UrlEntity;
+import com.example.jixly.entity.UserEntity;
+import com.example.jixly.enums.SubscriptionStatus;
 import com.example.jixly.repository.UrlRepository;
+import com.example.jixly.repository.UserRepository;
+import com.example.jixly.util.UrlChecker;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UrlService {
     private final UrlRepository urlRepository;
+    private final UserRepository userRepository;
 
-    public UrlService(UrlRepository urlRepository) {
+    public UrlService(UrlRepository urlRepository, UserRepository userRepository) {
         this.urlRepository = urlRepository;
+        this.userRepository = userRepository;
     }
 
     public UrlResponseDTO getUrlById(Long id){
@@ -26,19 +32,34 @@ public class UrlService {
         );
     }
 
-    public UrlResponseDTO createShortUrl(UrlRequestDTO requestDTO){
-        UrlEntity urlEntity = new UrlEntity();
+    public UrlResponseDTO createShortUrl(UrlRequestDTO requestDTO) {
 
-        urlEntity.setOriginalURL(requestDTO.getOriginalURL());
-        String newUrl = "https://" + ClassConstants.DOMAIN_URL + "/" + requestDTO.getSlug();
-        urlEntity.setShortUrl(newUrl);
+        UserEntity user = userRepository.findById(requestDTO.getUserId())
+                .orElseThrow();
 
-        UrlEntity saveUrl = urlRepository.save(urlEntity);
+        UrlEntity url = new UrlEntity();
+
+        url.setOriginalURL(requestDTO.getOriginalURL());
+        url.setSlug(requestDTO.getSlug());
+        url.setUser(user);
+
+        if (!UrlChecker.isUrlValid(requestDTO.getOriginalURL())) {
+            throw new IllegalArgumentException("Некорректная или недоступная ссылка");
+        }
+        if (user.getSubscription() == SubscriptionStatus.YES) {
+            url.setDomain(requestDTO.getDomain());
+        } else {
+            url.setDomain("jix.ly");
+        }
+
+        url.setShortUrl("https://" + url.getDomain() + "/" + url.getSlug());
+
+        UrlEntity savedUrl = urlRepository.save(url);
 
         return new UrlResponseDTO(
-                saveUrl.getId(),
-                saveUrl.getOriginalURL(),
-                saveUrl.getShortUrl()
+                savedUrl.getId(),
+                savedUrl.getOriginalURL(),
+                savedUrl.getShortUrl()
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.example.jixly.controller;
 
+import com.example.jixly.dto.user.UserCreateResponseDTO;
 import com.example.jixly.dto.user.UserRequestDTO;
 import com.example.jixly.dto.user.UserResponseDto;
 import com.example.jixly.entity.UserEntity;
@@ -23,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/create/user")
-    public UserResponseDto createNewUser(@RequestBody @Valid UserRequestDTO dto){
+    public UserCreateResponseDTO createNewUser(@RequestBody @Valid UserRequestDTO dto){
         return userService.createUser(dto);
     }
 }

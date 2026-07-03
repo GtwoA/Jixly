@@ -35,7 +35,7 @@ public class UrlEntity {
     private String shortUrl;
 
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private UserEntity user;
 }

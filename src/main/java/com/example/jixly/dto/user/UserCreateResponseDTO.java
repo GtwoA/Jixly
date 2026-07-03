@@ -1,19 +1,19 @@
 package com.example.jixly.dto.user;
 
-import com.example.jixly.entity.UrlEntity;
 import com.example.jixly.enums.SubscriptionStatus;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserResponseDto {
+public class UserCreateResponseDTO {
     private Long id;
 
     private String email;
@@ -21,6 +21,4 @@ public class UserResponseDto {
     private String name;
 
     private SubscriptionStatus subscription;
-
-    private List<UrlEntity> urlEntities;
 }
